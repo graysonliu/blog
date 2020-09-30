@@ -1,1 +1,1 @@
-Sitemap: https://graysonliu.github.io/fastpages/sitemap.xml
+Sitemap: https://graysonliu.github.io/sitemap.xml
