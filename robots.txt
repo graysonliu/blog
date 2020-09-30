@@ -1,1 +1,1 @@
-Sitemap: https://graysonliu.github.io/sitemap.xml
+Sitemap: https://graysonliu.github.io/blog/sitemap.xml
