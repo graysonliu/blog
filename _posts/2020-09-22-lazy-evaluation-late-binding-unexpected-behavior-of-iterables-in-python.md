@@ -131,7 +131,7 @@ rows = [(lambda u: ([u, v] for v in nums2))(k) for k in nums1]
 print(list(heapq.merge(*rows, key=sum)))
 # [[1, 2], [1, 4], [1, 6], [7, 2], [7, 4], [7, 6], [11, 2], [11, 4], [11, 6]]
 ```
-We replaced `u` with `k`, which holds the value of the element currently being iterated in `nums1`, to make the structure more clear. However, this is not necessary since even if we use `u` to iterate `nums1`, in the lambda function, `u` will be overridden by the parameter `u` of the function.
+We replaced `u` with `k`, which holds the value of the element currently being iterated in `nums1`, to make the structure more clear. However, this is not necessary since even if we use `u` to iterate `nums1`, in the lambda function, `u` will be overwritten by the parameter `u` of the function.
 
 To better understand how this `u` affects the output, we can also use lambda expressions to write the equivalents of previous definitions of `rows` that give us incorrect results:
 ```python
