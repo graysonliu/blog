@@ -2,7 +2,7 @@
 layout: post
 title: "Lazy Evaluation & Late Binding: Unexpected Behavior of Iterables in Python"
 date: 2020-09-22
-tags: coding python iterator lazy-evaluation late-binding leetcode heap
+categories: [coding, python, iterator, lazy-evaluation, late-binding, leetcode, heap]
 ---
 ## Glossary
 `iterable` in Python: 

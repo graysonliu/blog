@@ -2,7 +2,7 @@
 layout: post
 title: "Using a Forked Jekyll Theme for Github Pages"
 date: 2020-09-21
-tags: jekyll blog git github-pages
+categories: [jekyll, blog, git, github-pages]
 ---
 
 ## Switch to Jekyll
