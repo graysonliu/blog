@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Lazy Evaluation &amp; Late Binding: Unexpected Behavior of Iterables in Python | CodingBiz :running::thinking::sleeping:</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Lazy Evaluation &amp; Late Binding: Unexpected Behavior of Iterables in Python" />
+<meta name="author" content="Zijian Liu" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Glossary iterable in Python: An object capable of returning its members one at a time." />
+<meta property="og:description" content="Glossary iterable in Python: An object capable of returning its members one at a time." />
+<link rel="canonical" href="https://graysonliu.github.io/blog/2020/09/22/lazy-evaluation-late-binding-unexpected-behavior-of-iterables-in-python.html" />
+<meta property="og:url" content="https://graysonliu.github.io/blog/2020/09/22/lazy-evaluation-late-binding-unexpected-behavior-of-iterables-in-python.html" />
+<meta property="og:site_name" content="CodingBiz :running::thinking::sleeping:" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-22T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"Glossary iterable in Python: An object capable of returning its members one at a time.","url":"https://graysonliu.github.io/blog/2020/09/22/lazy-evaluation-late-binding-unexpected-behavior-of-iterables-in-python.html","@type":"BlogPosting","headline":"Lazy Evaluation &amp; Late Binding: Unexpected Behavior of Iterables in Python","dateModified":"2020-09-22T00:00:00-05:00","datePublished":"2020-09-22T00:00:00-05:00","author":{"@type":"Person","name":"Zijian Liu"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/2020/09/22/lazy-evaluation-late-binding-unexpected-behavior-of-iterables-in-python.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz :running::thinking::sleeping:" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link href="https://cdn.jsdelivr.net/npm/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.css">
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/blog/">CodingBiz <img class="emoji" title=":running:" alt=":running:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f3c3.png" height="20" width="20"><img class="emoji" title=":thinking:" alt=":thinking:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png" height="20" width="20"><img class="emoji" title=":sleeping:" alt=":sleeping:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f634.png" height="20" width="20"></a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+<a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a>
+</div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Lazy Evaluation &amp; Late Binding: Unexpected Behavior of Iterables in Python</h1>
+<p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-22T00:00:00-05:00" itemprop="datePublished">
+        Sep 22, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      9 min read
+    
+</span></p>
+
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="glossary">Glossary</h2>
+<p><code class="language-plaintext highlighter-rouge">iterable</code> in Python:</p>
+<blockquote>
+  <p>An object capable of returning its members one at a time.</p>
+</blockquote>
+
+<p>Anything that can be used in a <code class="language-plaintext highlighter-rouge">for</code> loop, such as <code class="language-plaintext highlighter-rouge">list</code>, <code class="language-plaintext highlighter-rouge">tuple</code>, <code class="language-plaintext highlighter-rouge">str</code>, <code class="language-plaintext highlighter-rouge">dict</code>, <code class="language-plaintext highlighter-rouge">set</code> and iterators. We can convert an iterable to an iterator, which is actually what <code class="language-plaintext highlighter-rouge">for</code> statement does, by passing it to the built-in function <code class="language-plaintext highlighter-rouge">iter()</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">iterator</code> in Python:</p>
+<blockquote>
+  <p>An object representing a stream of data.</p>
+</blockquote>
+
+<p>It must have the <code class="language-plaintext highlighter-rouge">__next__()</code> method (or can be passed to the built-in function <code class="language-plaintext highlighter-rouge">next()</code>), such as generators, <code class="language-plaintext highlighter-rouge">map</code> objects.</p>
+
+<h2 id="the-problem">The Problem</h2>
+
+<p>Recently, I’ve been practicing on <a href="https://leetcode.com">Leetcode</a>. In problem <a href="https://leetcode.com/problems/find-k-pairs-with-smallest-sums/">373. Find K Pairs with Smallest Sums</a>, I implemented a solution inspired by discussions in the community using <code class="language-plaintext highlighter-rouge">heapq.merge</code> in Python as follows:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">kSmallestPairs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nums1</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">nums2</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="kn">import</span> <span class="nn">heapq</span>
+    <span class="c1"># we have m*n pairs, imagine a m*n matrix
+</span>    <span class="n">rows</span> <span class="o">=</span> <span class="p">(([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+    <span class="c1"># since both nums1 and nums2 are ascending
+</span>    <span class="c1"># each row is already sorted based on the sum of u and v
+</span>
+    <span class="c1"># regular slicing cannot be applied to generator since 'generator' object does not have __getitem__
+</span>    <span class="c1"># we should use itertools.islice
+</span>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="p">.</span><span class="n">islice</span><span class="p">(</span><span class="n">heapq</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="o">*</span><span class="n">rows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">sum</span><span class="p">),</span> <span class="n">k</span><span class="p">))</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">kSmallestPairs</span><span class="p">(</span><span class="n">nums1</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="n">nums2</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="mi">9</span><span class="p">))</span>
+</code></pre></div></div>
+<p>The main idea of <code class="language-plaintext highlighter-rouge">heapq.merge</code> is like a multi-way merge sort on many already-sorted iterables. The difference is that <code class="language-plaintext highlighter-rouge">heapq.merge</code> uses a heap for ordering. Heap is just a binary tree in Python, and it is implemented with an array. <code class="language-plaintext highlighter-rouge">heapq.merge</code> initially collects the first element of each input iterable to form a list, then it <code class="language-plaintext highlighter-rouge">heapify</code> the list, transforming it to a heap. The first element of heap—<code class="language-plaintext highlighter-rouge">h[0]</code>, is always the smallest in the heap (supposing it is a min-heap). <code class="language-plaintext highlighter-rouge">heap.merge</code> just <code class="language-plaintext highlighter-rouge">pop</code> <code class="language-plaintext highlighter-rouge">h[0]</code> and puts it into the result iterator, and then <code class="language-plaintext highlighter-rouge">push</code> the following element of <code class="language-plaintext highlighter-rouge">h[0]</code> from the same input iterable into the heap (more details at <a href="https://github.com/python/cpython/blob/master/Lib/heapq.py#L314">source code</a>). We can also use heap as a priority queue.</p>
+
+<p>Back to the previous code, <code class="language-plaintext highlighter-rouge">rows</code> is a generator of generators. We expect <code class="language-plaintext highlighter-rouge">k</code> pairs of smallest sums as the output, which should be:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+</code></pre></div></div>
+<p>However, the output actually is:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">],</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]]</span>
+</code></pre></div></div>
+<p>Is something wrong with the generator? Try following code:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">nums1</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">]</span>
+<span class="n">nums2</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">(([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Surprisingly, the output is what we expect:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+</code></pre></div></div>
+
+<h2 id="lazy-evaluation">Lazy Evaluation</h2>
+
+<p>We know that generators in Python are lazy evaluation. An element in a generator is only evaluated when we iterate to it. Most other objects in Python are eager evaluation.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">j</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>  <span class="c1"># list
+</span><span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>  <span class="c1"># generator
+</span><span class="n">j</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">print</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>  <span class="c1"># [1, 1, 1, 1]
+</span><span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>  <span class="c1"># [2, 2, 2, 2]
+</span></code></pre></div></div>
+<p>In above snippet, list <code class="language-plaintext highlighter-rouge">L</code> is evaluated when <code class="language-plaintext highlighter-rouge">j=1</code>, while generator <code class="language-plaintext highlighter-rouge">G</code> is not evaluated until we call <code class="language-plaintext highlighter-rouge">list(G)</code>, at that time <code class="language-plaintext highlighter-rouge">j=2</code>.</p>
+
+<p>Back to the generator <code class="language-plaintext highlighter-rouge">rows</code>, if we make it a list of generators instead of a generator of generators:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span> <span class="o">=</span> <span class="p">[([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+</code></pre></div></div>
+<p>We have output:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span> 
+</code></pre></div></div>
+<p>The output is different from when <code class="language-plaintext highlighter-rouge">rows</code> is a generator, but it is similar to the output of <code class="language-plaintext highlighter-rouge">heapq.merge</code>. The only difference is we did not sort the list as in <code class="language-plaintext highlighter-rouge">heapq.merge</code>.</p>
+
+<p>If we think about the evaluation mechanism, when we create <code class="language-plaintext highlighter-rouge">rows</code> as a list, since list is eager evaluation, <code class="language-plaintext highlighter-rouge">u</code> should be 11 after that line is executed. That is why when we iterate those three generators later, the first elements of all pairs are 11. When <code class="language-plaintext highlighter-rouge">rows</code> is a generator, since generators are lazy evaluation, the value of <code class="language-plaintext highlighter-rouge">u</code> only changes after we finish iterating each row.</p>
+
+<p>Back to <code class="language-plaintext highlighter-rouge">heapq.merge</code>, which is actually <code class="language-plaintext highlighter-rouge">heapq.merge(*iterables, key=None, reverse=False)</code>. The first parameter <code class="language-plaintext highlighter-rouge">iterables</code> becomes a tuple after it receives input iterables. We can easily check this by following snippet:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span> <span class="o">=</span> <span class="p">(([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="o">*</span><span class="n">iterables</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">iterables</span><span class="p">))</span>  <span class="c1"># &lt;class 'tuple'&gt;
+</span>    <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iterables</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">it</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+
+<span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">rows</span><span class="p">)</span>  <span class="c1"># [11, 2] [11, 4] [11, 6] [11, 2] [11, 4] [11, 6] [11, 2] [11, 4] [11, 6]
+</span></code></pre></div></div>
+<p>The output is the same as when <code class="language-plaintext highlighter-rouge">rows</code> is a list even if we pass <code class="language-plaintext highlighter-rouge">rows</code> as a generator. Because it is converted to a tuple in the function, and tuple is also eager evaluation just like list.</p>
+
+<p>However, even if <code class="language-plaintext highlighter-rouge">heapq.merge</code> does not convert <code class="language-plaintext highlighter-rouge">rows</code> to a tuple, we still cannot expect correct output. We mentioned before that <code class="language-plaintext highlighter-rouge">heapq.merge</code> initially collects the first element of each input iterable, considering following code:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span> <span class="o">=</span> <span class="p">(([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+<span class="n">it1</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it1</span><span class="p">))</span>  <span class="c1"># [1, 2]
+</span><span class="n">it2</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it1</span><span class="p">))</span>  <span class="c1"># [7, 4], we expect [1, 4] 
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it2</span><span class="p">))</span>  <span class="c1"># [7, 2]
+</span><span class="n">it3</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it1</span><span class="p">))</span>  <span class="c1"># [11, 6], we expect [1, 6] 
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it2</span><span class="p">))</span>  <span class="c1"># [11, 4], we expect [7, 4]
+</span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it3</span><span class="p">))</span>  <span class="c1"># [11, 2]
+</span></code></pre></div></div>
+<p>We find that every time we call <code class="language-plaintext highlighter-rouge">next(rows)</code>, the value of <code class="language-plaintext highlighter-rouge">u</code> changes. Thus, even if <code class="language-plaintext highlighter-rouge">heapq.merge</code> dose not convert <code class="language-plaintext highlighter-rouge">rows</code> to a tuple, we can only guarantee correct pairs for the first element in each generator. After that, the first value of all subsequent pairs will be the same.</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>The correct way to solve the above problem is to make <code class="language-plaintext highlighter-rouge">rows</code> a <code class="language-plaintext highlighter-rouge">map</code> object:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">),</span> <span class="n">nums1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">heapq</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="o">*</span><span class="n">rows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">sum</span><span class="p">)))</span>
+<span class="c1"># [[1, 2], [1, 4], [1, 6], [7, 2], [7, 4], [7, 6], [11, 2], [11, 4], [11, 6]]
+</span></code></pre></div></div>
+<p>This <code class="language-plaintext highlighter-rouge">map</code> object is also converted to a tuple when passing to <code class="language-plaintext highlighter-rouge">heapq.merge</code>, however, it gives us correct result. <code class="language-plaintext highlighter-rouge">map</code> objects are iterators, using lazy evaluation just like generators. The difference here is that this uses a function to create three generators. <strong>That <code class="language-plaintext highlighter-rouge">u</code> here is a parameter of the lambda function, not a single variable that holds the value of an element in <code class="language-plaintext highlighter-rouge">nums1</code>, and this function will be called three times with different values passed in.</strong> Therefore, this actually has nothing to do with <code class="language-plaintext highlighter-rouge">map</code>. It really depends on what <code class="language-plaintext highlighter-rouge">u</code> is. If we define <code class="language-plaintext highlighter-rouge">rows</code> as follows, we can also get the correct output:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span> <span class="o">=</span> <span class="p">((</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">))(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">heapq</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="o">*</span><span class="n">rows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">sum</span><span class="p">)))</span>
+<span class="c1"># [[1, 2], [1, 4], [1, 6], [7, 2], [7, 4], [7, 6], [11, 2], [11, 4], [11, 6]]
+</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[(</span><span class="k">lambda</span> <span class="n">u</span><span class="p">:</span> <span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">))(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">heapq</span><span class="p">.</span><span class="n">merge</span><span class="p">(</span><span class="o">*</span><span class="n">rows</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">sum</span><span class="p">)))</span>
+<span class="c1"># [[1, 2], [1, 4], [1, 6], [7, 2], [7, 4], [7, 6], [11, 2], [11, 4], [11, 6]]
+</span></code></pre></div></div>
+<p>We replaced <code class="language-plaintext highlighter-rouge">u</code> with <code class="language-plaintext highlighter-rouge">k</code>, which holds the value of the element currently being iterated in <code class="language-plaintext highlighter-rouge">nums1</code>, to make the structure more clear. However, this is not necessary since even if we use <code class="language-plaintext highlighter-rouge">u</code> to iterate <code class="language-plaintext highlighter-rouge">nums1</code>, in the lambda function, <code class="language-plaintext highlighter-rouge">u</code> will be overridden by the parameter <code class="language-plaintext highlighter-rouge">u</code> of the function.</p>
+
+<p>To better understand how this <code class="language-plaintext highlighter-rouge">u</code> affects the output, we can also use lambda expressions to write the equivalents of previous definitions of <code class="language-plaintext highlighter-rouge">rows</code> that give us incorrect results:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rows</span> <span class="o">=</span> <span class="p">(([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+<span class="c1"># is equivalent to
+</span><span class="n">rows</span> <span class="o">=</span> <span class="p">((</span><span class="k">lambda</span><span class="p">:</span> <span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">))()</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">)</span>
+
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">]</span>
+<span class="c1"># is equivalent to
+</span><span class="n">rows</span> <span class="o">=</span> <span class="p">[(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">([</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nums2</span><span class="p">))()</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nums1</span><span class="p">]</span>
+</code></pre></div></div>
+
+<h2 id="late-binding">Late Binding</h2>
+
+<p>I also want to mention late binding here because it usually leads to unexpected behavior in Python, though not specifically limited to iterables. According to <a href="https://en.wikipedia.org/wiki/Late_binding">Wikipedia</a>:</p>
+<blockquote>
+  <p>Late binding, dynamic binding, or dynamic linkage is a computer programming mechanism in which the method being called upon an object or the function being called with arguments is looked up by name at runtime.</p>
+</blockquote>
+
+<p>There is a good <a href="https://docs.python-guide.org/writing/gotchas/#late-binding-closures">article</a> talking about late binding in Python. We will use some snippets to figure out how late binding works.</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">func</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+<span class="c1"># 4 4 4 4 4
+</span></code></pre></div></div>
+<p>The output again is a repeat of the last element of <code class="language-plaintext highlighter-rouge">range(5)</code>. We defined <code class="language-plaintext highlighter-rouge">funcs</code>, which is a list of 5 functions. Each function does not accept any parameters and returns <code class="language-plaintext highlighter-rouge">u</code>, which holds the value of the element being iterated in <code class="language-plaintext highlighter-rouge">range(5)</code>. These functions are not called until we enter the following <code class="language-plaintext highlighter-rouge">for</code> loop and use <code class="language-plaintext highlighter-rouge">func()</code>.</p>
+
+<p><strong>Late binding means that values of variables used in a function are looked up at the time the function is called.</strong> When we call those five functions in <code class="language-plaintext highlighter-rouge">funcs</code>, they will all look up the value of <code class="language-plaintext highlighter-rouge">u</code>, which becomes <code class="language-plaintext highlighter-rouge">4</code> after we define <code class="language-plaintext highlighter-rouge">funcs</code>, because <code class="language-plaintext highlighter-rouge">funcs</code>, which is a list, use eager evaluation. However, if we define <code class="language-plaintext highlighter-rouge">funcs</code> as generators, the output becomes what we expect:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">funcs</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">func</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s">' '</span><span class="p">)</span>
+<span class="c1"># 0 1 2 3 4 
+</span></code></pre></div></div>
+<p>This is obvious since generators use lazy evaluation. The value of <code class="language-plaintext highlighter-rouge">u</code> changes along the <code class="language-plaintext highlighter-rouge">for</code> loop.</p>
+
+<p>Another example of late binding without iterables:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">i</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">print</span><span class="p">(</span><span class="n">func</span><span class="p">())</span> <span class="c1"># 2
+</span></code></pre></div></div>
+
+  </div>
+<a class="u-url" href="/blog/2020/09/22/lazy-evaluation-late-binding-unexpected-behavior-of-iterables-in-python.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">Zijian Liu</li>
+          <li><a class="u-email" href="mailto:liu.zijian@outlook.com">liu.zijian@outlook.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Just my coding business.</p>
+      </div>
+    </div>
+
+    <div class="social-links">
+<ul class="social-media-list">
+<li><a rel="me" href="https://github.com/graysonliu" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li>
+<li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

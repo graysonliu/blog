@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Using a Forked Jekyll Theme for Github Pages | CodingBiz :running::thinking::sleeping:</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Using a Forked Jekyll Theme for Github Pages" />
+<meta name="author" content="Zijian Liu" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Switch to Jekyll" />
+<meta property="og:description" content="Switch to Jekyll" />
+<link rel="canonical" href="https://graysonliu.github.io/blog/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html" />
+<meta property="og:url" content="https://graysonliu.github.io/blog/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html" />
+<meta property="og:site_name" content="CodingBiz :running::thinking::sleeping:" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-21T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"Switch to Jekyll","url":"https://graysonliu.github.io/blog/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html","@type":"BlogPosting","headline":"Using a Forked Jekyll Theme for Github Pages","dateModified":"2020-09-21T00:00:00-05:00","datePublished":"2020-09-21T00:00:00-05:00","author":{"@type":"Person","name":"Zijian Liu"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html"},"@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz :running::thinking::sleeping:" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link href="https://cdn.jsdelivr.net/npm/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.css">
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper">
+<a class="site-title" rel="author" href="/blog/">CodingBiz <img class="emoji" title=":running:" alt=":running:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f3c3.png" height="20" width="20"><img class="emoji" title=":thinking:" alt=":thinking:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f914.png" height="20" width="20"><img class="emoji" title=":sleeping:" alt=":sleeping:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f634.png" height="20" width="20"></a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger">
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewbox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"></path>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+<a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a>
+</div>
+      </nav>
+</div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Using a Forked Jekyll Theme for Github Pages</h1>
+<p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-09-21T00:00:00-05:00" itemprop="datePublished">
+        Sep 21, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      2 min read
+    
+</span></p>
+
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <h2 id="switch-to-jekyll">Switch to Jekyll</h2>
+
+<p>I have abandoned blogging for a very long time. I used to build my blog on <a href="https://github.com/hexojs/hexo">Hexo</a> and hosted it on Github Pages. A major drawback of this solution is that we have to first generate all static files locally, and then push all those files to the remote repository. As for <a href="https://github.com/jekyll/jekyll">Jekyll</a>, since it is officially supported by Github Pages, we only need to push sources to the remote repository. Github Pages will generate the static site automatically, and those static files are not a part of our repository, making our repo much tidier.</p>
+
+<p>There is a great <a href="https://docs.github.com/en/github/working-with-github-pages/setting-up-a-github-pages-site-with-jekyll">guide</a> on blogging with Github Pages and Jekyll, but this solution also has a pain point. Although Jekyll has plenty of plugins developed by the community, Github Pages only supports some <a href="https://pages.github.com/versions/">specific ones</a>, let alone most supported plugins are of an older version without newest features. If we want to beautify or add features to the blog, we have to modify corresponding templates by ourselves. Of course, we can add those modified templates to our Github Pages repo directly, but what if we want to use them as a separate theme like a Ruby gem. If this new theme is a fork of an existing theme, we might also want to update it from the upstream. Although Github Pages only supports specific Jekyll plugins, it could utilize any Jekyll theme that is hosted on Github. Therefore, we need to create our own Jekyll theme and host it on Github, then specify it as the the theme that should be used by Github Pages.</p>
+
+<h2 id="configuration">Configuration</h2>
+
+<p>I forked the <a href="https://github.com/jekyll/minima">minima</a> theme and plan to develop my own theme based on it. Give the forked repo a new name, better to be the name you want for this new theme, e.g. <code class="language-plaintext highlighter-rouge">minima-graysonliu</code>. Then, in <code class="language-plaintext highlighter-rouge">*.gemspec</code>, simply change the value of <code class="language-plaintext highlighter-rouge">spec.name</code> to <code class="language-plaintext highlighter-rouge">minima-graysonliu</code>. We now have a Github-hosted Jekyll theme called <code class="language-plaintext highlighter-rouge">minima-graysonliu</code>. To use this theme, navigate to our Github Pages repo, in <code class="language-plaintext highlighter-rouge">_config.yml</code>, delete the following line:</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">theme</span><span class="pi">:</span> <span class="s">...</span>
+</code></pre></div></div>
+<p>and add a new line:</p>
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">remote_theme</span><span class="pi">:</span> <span class="s">graysonliu/minima-graysonliu</span>
+</code></pre></div></div>
+<p>The value of the <code class="language-plaintext highlighter-rouge">remote_theme</code> is just the name of your new theme repo hosted on Github, and we are done.</p>
+
+<p>Other changes are needed if we want to modify and test our new theme locally. We first clone both the blog (Github Pages) repo and the theme repo to our local disk. In <code class="language-plaintext highlighter-rouge">Gemfile</code> of the blog repo, change</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># This is the default theme for new Jekyll sites. You may change this to anything you like.</span>
+<span class="n">gem</span> <span class="s2">"minima"</span>
+</code></pre></div></div>
+<p>to</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># This is the default theme for new Jekyll sites. You may change this to anything you like.</span>
+<span class="n">gem</span> <span class="s2">"minima-graysonliu"</span><span class="p">,</span> <span class="ss">:path</span> <span class="o">=&gt;</span> <span class="s2">"/LOCAL_PATH_TO_THEME_REPO/minima-graysonliu"</span>
+</code></pre></div></div>
+<p>Update with:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle update
+</code></pre></div></div>
+<p>Even if <code class="language-plaintext highlighter-rouge">_config.yml</code> in the blog repo does not have the key <code class="language-plaintext highlighter-rouge">theme</code> (because we replaced it with <code class="language-plaintext highlighter-rouge">remote_theme</code>), since we specify <code class="language-plaintext highlighter-rouge">minima-graysonliu</code> as the default theme, Jekyll will use it when we run the server locally.</p>
+
+<p>If we need to keep our forked new theme updated with the original theme, just set the original repo as its <a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork">upstream</a> and <a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork">sync</a> the fork regularly.</p>
+
+  </div>
+<a class="u-url" href="/blog/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">Zijian Liu</li>
+          <li><a class="u-email" href="mailto:liu.zijian@outlook.com">liu.zijian@outlook.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Just my coding business.</p>
+      </div>
+    </div>
+
+    <div class="social-links">
+<ul class="social-media-list">
+<li><a rel="me" href="https://github.com/graysonliu" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li>
+<li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li>
+</ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
