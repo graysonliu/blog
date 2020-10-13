@@ -6,7 +6,7 @@
 
 https://graysonliu.github.io/blog
 
-# My Blog
+# Blog
 
 
 _powered by [fastpages](https://github.com/fastai/fastpages)_
