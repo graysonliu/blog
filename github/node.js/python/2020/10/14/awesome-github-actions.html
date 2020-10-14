@@ -102,19 +102,19 @@ window.onload = wrap_img;
         <div class="pb-5 d-flex flex-wrap flex-justify-end">
           <div class="px-2">
 
-    <a href="https://github.com/graysonliu/fastpages/tree/master/_notebooks/2020-10-14-awesome-github-actions.ipynb" role="button" target="_blank">
+    <a href="https://github.com/graysonliu/blog/tree/master/_notebooks/2020-10-14-awesome-github-actions.ipynb" role="button" target="_blank">
 <img class="notebook-badge-image" src="/blog/assets/badges/github.svg" alt="View On GitHub">
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://mybinder.org/v2/gh/graysonliu/fastpages/master?filepath=_notebooks%2F2020-10-14-awesome-github-actions.ipynb" target="_blank">
+    <a href="https://mybinder.org/v2/gh/graysonliu/blog/master?filepath=_notebooks%2F2020-10-14-awesome-github-actions.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/blog/assets/badges/binder.svg" alt="Open In Binder"/>
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://colab.research.google.com/github/graysonliu/fastpages/blob/master/_notebooks/2020-10-14-awesome-github-actions.ipynb" target="_blank">
+    <a href="https://colab.research.google.com/github/graysonliu/blog/blob/master/_notebooks/2020-10-14-awesome-github-actions.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/blog/assets/badges/colab.svg" alt="Open In Colab"/>
     </a>
 </div>
@@ -146,7 +146,7 @@ window.onload = wrap_img;
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Just weeks ago, I set up this blog with Jekyll on Github Pages. However, I switched to <a href="https://github.com/fastai/fastpages">fastpages</a> because of Jupyter Notebook support. The swithcing isn't that difficult, but something caught my attention during the process, and that is <a href="https://github.com/features/actions">Github Actions</a>. We have talked about the idea that only pushing source files to the github repo and let Github Pages generate static files by its own. But Github Pages only supports Jekyll and limited number of plugins, and that is where Github Actions can help us.</p>
+<p>Just weeks ago, I set up this blog with Jekyll on Github Pages. However, I switched to <a href="https://github.com/fastai/fastpages">fastpages</a> because of Jupyter Notebook support. The swithcing isn't that difficult, but something caught my attention during the process, and that is <a href="https://github.com/features/actions">Github Actions</a>. We have talked about the idea that only pushing source files to the github repo and let Github Pages generate static files by its own. But Github Pages only supports Jekyll and limited number of plugins, and that is where Github Actions can help.</p>
 
 </div>
 </div>
@@ -221,7 +221,7 @@ window.onload = wrap_img;
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Now, we run bash command <code>npm ci</code> to download all dependencies (if one dependency exists in cache, <code>npm</code> will just use the alreay downloaded package, new dependencies will be downloaded from the Internet). Then, we run <code>npm run build</code> to generate all static files. In my <a href="https://github.com/graysonliu/graysonliu.github.io/blob/master/package.json">package.json</a>, <code>npm run build</code> will use Webpack to achieve that:</p>
+<p>Now, we run bash command <code>npm ci</code> to download all dependencies (if one dependency exists in cache, <code>npm</code> will just use the alreay downloaded package, while new dependencies will be downloaded from the Internet). Then, we run <code>npm run build</code> to generate all static files. In my <a href="https://github.com/graysonliu/graysonliu.github.io/blob/master/package.json">package.json</a>, <code>npm run build</code> will use Webpack to achieve that:</p>
 <div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="err">...</span>
   <span class="nt">&quot;scripts&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -231,7 +231,7 @@ window.onload = wrap_img;
   <span class="err">...</span>
 <span class="p">}</span>
 </pre></div>
-<p>Webpack generate all files in the <code>/dist</code> folder, and we should deploy all content in this folder to the branch <code>gh-pages</code>. That is excatly what <code>peaceiris/actions-gh-pages</code> does at last. As for <code>${{ secrets.GITHUB_TOKEN }}</code>, this is an automactically generated token by Github for authentication in the workflow, since this action will write to our repository. We will find more usages of secrets in the next part.</p>
+<p>Webpack generate all files in the <code>/dist</code> folder, and we should deploy all content in this folder to the branch <code>gh-pages</code>. That is excatly what <code>peaceiris/actions-gh-pages</code> does at last. As for <code>${{ secrets.GITHUB_TOKEN }}</code>, this is an automactically generated token by Github for authentication in the workflow, since this action needs to be authorized to write into our repository. We will find more usages of secrets in the next part.</p>
 
 </div>
 </div>
@@ -249,7 +249,7 @@ window.onload = wrap_img;
 
   </div><!-- from https://github.com/utterance/utterances -->
 <script src="https://utteranc.es/client.js"
-        repo="graysonliu/fastpages"
+        repo="graysonliu/blog"
         issue-term="title"
         label="blogpost-comment"
         theme="github-light"
