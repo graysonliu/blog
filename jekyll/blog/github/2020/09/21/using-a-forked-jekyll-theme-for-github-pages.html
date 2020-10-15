@@ -9,15 +9,15 @@
 <meta property="og:title" content="Using a Forked Jekyll Theme for Github Pages" />
 <meta name="author" content="Zijian Liu" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Switch to Jekyll" />
-<meta property="og:description" content="Switch to Jekyll" />
+<meta name="description" content="Just my coding business." />
+<meta property="og:description" content="Just my coding business." />
 <link rel="canonical" href="https://graysonliu.github.io/blog/jekyll/blog/github/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html" />
 <meta property="og:url" content="https://graysonliu.github.io/blog/jekyll/blog/github/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html" />
 <meta property="og:site_name" content="CodingBiz 🏃️🤔😴" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2020-09-21T00:00:00-05:00" />
 <script type="application/ld+json">
-{"description":"Switch to Jekyll","url":"https://graysonliu.github.io/blog/jekyll/blog/github/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html","@type":"BlogPosting","headline":"Using a Forked Jekyll Theme for Github Pages","dateModified":"2020-09-21T00:00:00-05:00","datePublished":"2020-09-21T00:00:00-05:00","author":{"@type":"Person","name":"Zijian Liu"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/jekyll/blog/github/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html"},"@context":"https://schema.org"}</script>
+{"description":"Just my coding business.","url":"https://graysonliu.github.io/blog/jekyll/blog/github/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html","@type":"BlogPosting","headline":"Using a Forked Jekyll Theme for Github Pages","dateModified":"2020-09-21T00:00:00-05:00","datePublished":"2020-09-21T00:00:00-05:00","author":{"@type":"Person","name":"Zijian Liu"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/jekyll/blog/github/2020/09/21/using-a-forked-jekyll-theme-for-github-pages.html"},"@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" /><link rel="shortcut icon" href="/blog/images/thinking.svg"><link href="https://cdn.jsdelivr.net/npm/@primer/css/dist/primer.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.css">
@@ -100,7 +100,8 @@ window.onload = wrap_img;
     </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <h2 id="switch-to-jekyll">Switch to Jekyll</h2>
+    
+<h2 id="switch-to-jekyll">Switch to Jekyll</h2>
 
 <p>I have abandoned blogging for a very long time. I used to build my blog on <a href="https://github.com/hexojs/hexo">Hexo</a> and hosted it on Github Pages. A major drawback of this solution is that we have to first generate all static files locally, and then push all those files to the remote repository. As for <a href="https://github.com/jekyll/jekyll">Jekyll</a>, since it is officially supported by Github Pages, we only need to push sources to the remote repository. Github Pages will generate the static site automatically, and those static files are not a part of our repository, making our repo much tidier.</p>
 
@@ -130,6 +131,7 @@ window.onload = wrap_img;
 <p>Even if <code class="language-plaintext highlighter-rouge">_config.yml</code> in the blog repo does not have the key <code class="language-plaintext highlighter-rouge">theme</code> (because we replaced it with <code class="language-plaintext highlighter-rouge">remote_theme</code>), since we specify <code class="language-plaintext highlighter-rouge">minima-graysonliu</code> as the default theme, Jekyll will use it when we run the server locally.</p>
 
 <p>If we need to keep our forked new theme updated with the original theme, just set the original repo as its <a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork">upstream</a> and <a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork">sync</a> the fork regularly.</p>
+
 
   </div><!-- from https://github.com/utterance/utterances -->
 <script src="https://utteranc.es/client.js"
