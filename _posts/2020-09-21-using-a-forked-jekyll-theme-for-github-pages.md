@@ -1,9 +1,11 @@
 ---
 layout: post
 title: "Using a Forked Jekyll Theme for Github Pages"
-date: 2020-09-21
-categories: [jekyll, blog, git, github-pages]
+categories: [jekyll, blog, github]
+comments: true
 ---
+
+{% raw %}
 
 ## Switch to Jekyll
 
@@ -40,3 +42,5 @@ bundle update
 Even if `_config.yml` in the blog repo does not have the key `theme` (because we replaced it with `remote_theme`), since we specify `minima-graysonliu` as the default theme, Jekyll will use it when we run the server locally.
 
 If we need to keep our forked new theme updated with the original theme, just set the original repo as its [upstream](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork) and [sync](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) the fork regularly.
+
+{% endraw %}
