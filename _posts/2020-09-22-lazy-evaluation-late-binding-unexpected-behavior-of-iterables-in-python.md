@@ -5,6 +5,9 @@ date: 2020-09-22
 categories: [coding, python, iterator, lazy-evaluation, late-binding, leetcode, heap]
 comments: true
 ---
+
+{% raw %}
+
 ## Glossary
 `iterable` in Python: 
 > An object capable of returning its members one at a time.
@@ -176,3 +179,5 @@ def func():
 i = 2
 print(func()) # 2
 ```
+
+{% endraw %}
