@@ -5,7 +5,7 @@ on:
       - master # need to filter here so we only deploy when there is a push to master
       - draft
   # no filters on pull requests, so intentionally left blank
-  pull_request:
+  # pull_request:
   workflow_dispatch:
 
 jobs:     
