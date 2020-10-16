@@ -14,6 +14,9 @@ function compare {
             fi 
             }  
 
-compare "https://unpkg.com/@primer/css/dist/primer.css" "https://cdn.jsdelivr.net/npm/@primer/css/dist/primer.css"
+compare "https://unpkg.com/@primer/css/dist/primer.css" "https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css"
 #compare "https://hypothes.is/embed.js" "https://cdn.jsdelivr.net/npm/hypothesis/build/boot.js"
-compare "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" "https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+compare "https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js"
+compare "https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css"
+compare "https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js"
+compare "https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js" "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"
