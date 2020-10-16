@@ -11,14 +11,5 @@
 @import "minima/fastpages-dracula-highlight"; 
 
 .input_area pre, .input_area div {
-    margin-bottom:1.0rem !important;
-    margin-top:1.5rem !important;
-    padding-bottom:0 !important;
-    padding-top:0 !important;
-    background: #323443 !important;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    border-radius: 5px;
-    // font-family: $mono-font;
-    font-size: 150%;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
