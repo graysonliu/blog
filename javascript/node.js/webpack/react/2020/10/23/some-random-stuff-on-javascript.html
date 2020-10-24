@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Some Random Stuff on JavaScript | CodingBiz 🏃️🤔😴</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Some Random Stuff on JavaScript" />
+<meta name="author" content="Zijian Liu" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Just my coding business." />
+<meta property="og:description" content="Just my coding business." />
+<link rel="canonical" href="https://graysonliu.github.io/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html" />
+<meta property="og:url" content="https://graysonliu.github.io/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html" />
+<meta property="og:site_name" content="CodingBiz 🏃️🤔😴" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-10-23T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://graysonliu.github.io/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html","@type":"BlogPosting","headline":"Some Random Stuff on JavaScript","dateModified":"2020-10-23T00:00:00-05:00","datePublished":"2020-10-23T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html"},"author":{"@type":"Person","name":"Zijian Liu"},"description":"Just my coding business.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-180715652-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" href="/blog/images/thinking.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">CodingBiz 🏃️🤔😴</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Some Random Stuff on JavaScript</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-10-23T00:00:00-05:00" itemprop="datePublished">
+        Oct 23, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      2 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#javascript">javascript</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#node.js">node.js</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#webpack">webpack</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#react">react</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    
+<h2 id="inject-environment-variables-into-web-pages-at-build-time">Inject Environment Variables into Web Pages at Build Time</h2>
+
+<p>Environment variables defined in <code class="language-plaintext highlighter-rouge">.env</code> can be accessed when webpack is generating web pages. After webpack finishes creating all those static files, the concept of environment variable does not exist anymore when we open a purely static web page in a browser. That means, at runtime, without support from a back end, we cannot get those environment variables that we used at build time. For a purely static web page, if we still want to have access to those environment variables at runtime in the browser, a circumvent is to inject those values into the web page at build time. If you are using <a href="https://create-react-app.dev/">Create React App</a>, there is a simple way to achieve that according to its <a href="https://create-react-app.dev/docs/adding-custom-environment-variables/:#referencing-environment-variables-in-the-html">documentation</a>:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;title&gt;</span>%REACT_APP_WEBSITE_NAME%<span class="nt">&lt;/title&gt;</span>
+</code></pre></div></div>
+
+<p>I am using webpack instead of Create React App. In that case, <a href="https://github.com/jantimon/html-webpack-plugin">HtmlWebpackPlugin</a> is the solution. Actually, there is a Github repo called <a href="https://github.com/jaketrent/html-webpack-template">jaketrent/html-webpack-template</a> that has already showed the trick.</p>
+
+<p>In the config file of webpack, we add options for HtmlWebpackPlugin as follows:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">...</span>
+    <span class="k">new</span> <span class="nx">HtmlWebpackPlugin</span><span class="p">({</span>
+        <span class="na">template</span><span class="p">:</span> <span class="dl">"</span><span class="s2">./src/template.ejs</span><span class="dl">"</span><span class="p">,</span>
+        <span class="p">...</span>
+        <span class="c1">// inject environment variables into pages at build time</span>
+        <span class="na">window</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">env</span><span class="p">:</span> <span class="p">{</span>
+                <span class="na">client_id</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">CLIENT_ID</span><span class="p">,</span>
+                <span class="na">client_secret</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">CLIENT_SECRET</span><span class="p">,</span>
+                <span class="na">redirect_uri</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">REDIRECT_URL</span><span class="p">,</span>
+                <span class="na">scopes</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SCOPES</span><span class="p">,</span>
+                <span class="na">charts</span><span class="p">:</span> <span class="nx">charts</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="p">...</span>
+    <span class="p">}),</span>
+    <span class="p">...</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<p>Then, in the template (note that we use suffix <code class="language-plaintext highlighter-rouge">.ejs</code> instead of <code class="language-plaintext highlighter-rouge">.html</code> for the template so that webpack can pick the correct loader), we add snippet in the <code class="language-plaintext highlighter-rouge">&lt;head&gt;</code>:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;head&gt;</span>
+    ...
+    <span class="c">&lt;!-- inject environment variables into pages at build time --&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+        <span class="o">&lt;%</span> <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">htmlWebpackPlugin</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nb">window</span><span class="p">)</span> <span class="p">{</span> <span class="o">%&gt;</span>
+        <span class="nb">window</span><span class="p">[</span><span class="dl">'</span><span class="s1">&lt;%= key %&gt;</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;%=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">htmlWebpackPlugin</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nb">window</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="o">%&gt;</span><span class="p">;</span>
+        <span class="o">&lt;%</span> <span class="p">}</span> <span class="o">%&gt;</span>
+    <span class="nt">&lt;/script&gt;</span>
+    ...
+<span class="nt">&lt;/head&gt;</span>
+</code></pre></div></div>
+<p>Basically, we inject all environment variables into object <code class="language-plaintext highlighter-rouge">window.env</code>, which we have access to in the browser. In <a href="https://github.com/jaketrent/html-webpack-template">jaketrent/html-webpack-template</a>, there are also many other notable tricks, like injecting Google Analytics info into the web page using HtmlWebpackPlugin.</p>
+
+<h2 id="addomit-a-property-of-a-javascript-object-conditionally-in-one-line">Add/Omit a Property of a JavaScript Object Conditionally in One Line</h2>
+
+<p>When creating an object in JavaScript, if whether a property should be in this object is based on some condition, we can create this object utilizing spread syntax as follows:</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">name</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">person</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">...(</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="nx">name</span><span class="p">})</span>
+    <span class="p">};</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span> <span class="c1">// {}</span>
+
+<span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Peter</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">person</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">...(</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="nx">name</span><span class="p">})</span>
+    <span class="p">};</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span> <span class="c1">// { name: 'Peter' }</span>
+</code></pre></div></div>
+<p>Whether object <code class="language-plaintext highlighter-rouge">person</code> has property <code class="language-plaintext highlighter-rouge">name</code> or not is based on the value of variable <code class="language-plaintext highlighter-rouge">name</code>. We can also switch between properties conditionally:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">name</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">person</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">...(</span><span class="nx">name</span> <span class="p">?</span> <span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="nx">name</span><span class="p">}</span> <span class="p">:</span> <span class="p">{</span><span class="na">anonymous</span><span class="p">:</span> <span class="kc">true</span><span class="p">})</span>
+<span class="p">};</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span> <span class="c1">// { anonymous: true }</span>
+
+<span class="nx">name</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">Peter</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">person</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">...(</span><span class="nx">name</span> <span class="p">?</span> <span class="p">{</span><span class="na">name</span><span class="p">:</span> <span class="nx">name</span><span class="p">}</span> <span class="p">:</span> <span class="p">{</span><span class="na">anonymous</span><span class="p">:</span> <span class="kc">true</span><span class="p">})</span>
+<span class="p">};</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">person</span><span class="p">);</span> <span class="c1">// { name: 'Peter' }</span>
+</code></pre></div></div>
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="graysonliu/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">Zijian Liu</li>
+          <li><a class="u-email" href="mailto:liu.zijian@outlook.com">liu.zijian@outlook.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Just my coding business.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/graysonliu" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
