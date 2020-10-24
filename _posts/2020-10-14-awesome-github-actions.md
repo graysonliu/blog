@@ -76,9 +76,9 @@ Now, we run bash command `npm ci` to download all dependencies (if one dependenc
 ```
 Webpack generate all files in the `/dist` folder, and we should deploy all content in this folder to the branch `gh-pages`. That is excatly what `peaceiris/actions-gh-pages` does at last. As for `${{ secrets.GITHUB_TOKEN }}`, this is an automactically generated token by Github for authentication in the workflow, since this action needs to be authorized to write into our repository. We will find more usages of secrets in the next part.
 
-## Scheduled Spotify Playlists Updating with Github Actions
+## Periodically Spotify Playlists Updating with Github Actions
 
-I once wrote a Python script that can update my Spotify top 200 playlists with data from [SpotifyCharts](https://spotifycharts.com). To update playlists daily, this script will be executed everyday on my own server. However, with Github Actions, we can schedule a workflow that runs the script at any time. The repo is at [graysonliu/spotify-top-200-playlist-generator](https://github.com/graysonliu/spotify-top-200-playlist-generator). We use this [workflow](https://github.com/graysonliu/spotify-top-200-playlist-generator/blob/master/.github/workflows/python.yml) to update the playlists daily. At the beginning, apart from push-triggering, this workflow is also triggered at 00:00, 06:00, 12:00 and 18:00 every day:
+I once wrote a Python script that can update my Spotify top 200 playlists with data from [SpotifyCharts](https://spotifycharts.com). To update playlists periodically, this script will be executed everyday on my own server. However, with Github Actions, we can schedule a workflow that runs the script at any time. The repo is at [graysonliu/spotify-top-200-playlist-generator](https://github.com/graysonliu/spotify-top-200-playlist-generator). We use this [workflow](https://github.com/graysonliu/spotify-top-200-playlist-generator/blob/master/.github/workflows/python.yml) to update the playlists daily. At the beginning, apart from push-triggering, this workflow is also triggered at 00:00, 06:00, 12:00 and 18:00 every day:
 
 ```yaml
 on:
@@ -110,7 +110,7 @@ Similar to the previous Node.js project, we also need to checkout the repo, spec
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 ```
 
-Then, we execute the Python script to update our playlists. When we run this script locally, we can set client id and client secret of our Spotify app as environment variables in `.env`, then we can get their values in Python script by simply reading environment variables. However, sensitive information like client id and client secret should not be exposed. Therefore, we add them as secrets at Github, and set them as environment variables in the workflow (actually, client id is not sensitive at all, you can just put it in the `config.yml`).
+Then, we execute the Python script to update our playlists. When we run this script locally, we can set client id and client secret of our Spotify app as environment variables in `.env`, and their values can be obtained in Python script by simply reading environment variables. However, sensitive information like client id and client secret should not be exposed, meaning that we should not host this `.env` file on Github. Therefore, we add them as secrets at Github, and set them as environment variables in the workflow (actually, client id is not sensitive at all, you can just put it in the `config.yml`).
 
 Modifying playlists in Spotify needs authentication, and that requires a browser. However, since Github Actions works in a headless environment, it is impossible to use a browser for authentication. Our strategy is, we first authenticate the app locally, which will give us a `.cache` file that saves tokens and can be used for authentication for a long period of time. We create secret `AUTH_CACHE` that saves the content of `.cache` at Github and also set it as a environment variable in the runtime. In the workflow, when we execute the Python script, we fetch this environment variable and create a `.cache` file using this secret. This newly created `.cache` file will be used for authentication.
 
