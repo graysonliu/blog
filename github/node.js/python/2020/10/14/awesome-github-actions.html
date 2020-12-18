@@ -19,9 +19,7 @@
 <script type="application/ld+json">
 {"url":"https://graysonliu.github.io/blog/github/node.js/python/2020/10/14/awesome-github-actions.html","@type":"BlogPosting","headline":"Awesome Github Actions","dateModified":"2020-10-14T00:00:00-05:00","datePublished":"2020-10-14T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/github/node.js/python/2020/10/14/awesome-github-actions.html"},"author":{"@type":"Person","name":"Zijian Liu"},"description":"Try Github Actions with Node.js and Python projects.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" /><!-- the google_analytics_id gets auto inserted from the config file -->
-
-
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async
             src="https://www.googletagmanager.com/gtag/js?id=G-MP9ECE3FQE"></script>
@@ -233,13 +231,13 @@ window.onload = wrap_img;
 
 <p>Another thing is, tokens in <code class="language-plaintext highlighter-rouge">.cache</code> could be refreshed in the runtime. If we do not update <code class="language-plaintext highlighter-rouge">AUTH_CACHE</code> to keep up with the content of <code class="language-plaintext highlighter-rouge">.cache</code>, tokens saved in <code class="language-plaintext highlighter-rouge">AUTH_CACHE</code> could be expired. Therefore, after the playlists are updated, we have to write the content of <code class="language-plaintext highlighter-rouge">.cache</code> back to secret <code class="language-plaintext highlighter-rouge">AUTH_CACHE</code> in case file <code class="language-plaintext highlighter-rouge">.cache</code> changes (though it seems it never changes according to my experience). We have to use Github APIs to update secrets in a workflow, but that needs authentication from Github. The default <code class="language-plaintext highlighter-rouge">${{ secrets.GITHUB_TOKEN }}</code> does not have the permission to write secrets. For that purpose, we need a token with special scopes of permissions. First, we create a personal access token named <code class="language-plaintext highlighter-rouge">TOKEN_WRITE_SECRETS</code> with scopes as follows:</p>
 
-<p><img src="{{ site.baseurl }}/images/create_personal_access_token.png" alt="" /></p>
+<p><img src="/blog/images/create_personal_access_token.png" alt="" /></p>
 
 <p>Copy the generated token, and add it to secrets. We also name this secret <code class="language-plaintext highlighter-rouge">TOKEN_WRITE_SECRETS</code>.</p>
 
 <p>In total, we should have four secrets now:</p>
 
-<p><img src="{{ site.baseurl }}/images/secrets.png" alt="" /></p>
+<p><img src="/blog/images/secrets.png" alt="" /></p>
 
 <p>After the updating is finished, we write the content of <code class="language-plaintext highlighter-rouge">.cache</code> back to <code class="language-plaintext highlighter-rouge">AUTH_CACHE</code> in the Python script. To write a secret, we should encrypt its content using the repo’s public key first. This public key can also be acquired by Github APIs (see <a href="https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#get-a-repository-public-key">this</a>):</p>
 

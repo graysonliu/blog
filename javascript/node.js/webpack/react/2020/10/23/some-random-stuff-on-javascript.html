@@ -19,9 +19,7 @@
 <script type="application/ld+json">
 {"url":"https://graysonliu.github.io/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html","@type":"BlogPosting","headline":"Some Random Stuff on JavaScript","dateModified":"2020-10-23T00:00:00-05:00","datePublished":"2020-10-23T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/javascript/node.js/webpack/react/2020/10/23/some-random-stuff-on-javascript.html"},"author":{"@type":"Person","name":"Zijian Liu"},"description":"Just my coding business.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" /><!-- the google_analytics_id gets auto inserted from the config file -->
-
-
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async
             src="https://www.googletagmanager.com/gtag/js?id=G-MP9ECE3FQE"></script>
@@ -132,37 +130,35 @@ window.onload = wrap_img;
 <p>In the config file of webpack, we add options for HtmlWebpackPlugin as follows:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">plugins</span><span class="p">:</span> <span class="p">[</span>
-    <span class="p">...</span>
+    <span class="c1">// ...</span>
     <span class="k">new</span> <span class="nx">HtmlWebpackPlugin</span><span class="p">({</span>
         <span class="na">template</span><span class="p">:</span> <span class="dl">"</span><span class="s2">./src/template.ejs</span><span class="dl">"</span><span class="p">,</span>
-        <span class="p">...</span>
+        <span class="c1">// ...</span>
         <span class="c1">// inject environment variables into pages at build time</span>
         <span class="na">window</span><span class="p">:</span> <span class="p">{</span>
             <span class="na">env</span><span class="p">:</span> <span class="p">{</span>
-                <span class="na">client_id</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">CLIENT_ID</span><span class="p">,</span>
-                <span class="na">client_secret</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">CLIENT_SECRET</span><span class="p">,</span>
-                <span class="na">redirect_uri</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">REDIRECT_URL</span><span class="p">,</span>
-                <span class="na">scopes</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">SCOPES</span><span class="p">,</span>
-                <span class="na">charts</span><span class="p">:</span> <span class="nx">charts</span>
+                <span class="na">env_var_1</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ENV_VAR_1</span><span class="p">,</span>
+                <span class="na">env_var_2</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ENV_VAR_2</span><span class="p">,</span>
+                <span class="na">env_var_3</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ENV_VAR_3</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
-        <span class="p">...</span>
+        <span class="c1">// ...</span>
     <span class="p">}),</span>
-    <span class="p">...</span>
+    <span class="c1">// ...</span>
 <span class="p">]</span>
 </code></pre></div></div>
 
 <p>Then, in the template (note that we use suffix <code class="language-plaintext highlighter-rouge">.ejs</code> instead of <code class="language-plaintext highlighter-rouge">.html</code> for the template so that webpack can pick the correct loader), we add snippet in the <code class="language-plaintext highlighter-rouge">&lt;head&gt;</code>:</p>
 
 <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;head&gt;</span>
-    ...
+    <span class="c">&lt;!-- ... --&gt;</span>
     <span class="c">&lt;!-- inject environment variables into pages at build time --&gt;</span>
     <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
         <span class="o">&lt;%</span> <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">htmlWebpackPlugin</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nb">window</span><span class="p">)</span> <span class="p">{</span> <span class="o">%&gt;</span>
         <span class="nb">window</span><span class="p">[</span><span class="dl">'</span><span class="s1">&lt;%= key %&gt;</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="o">&lt;%=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">htmlWebpackPlugin</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nb">window</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="o">%&gt;</span><span class="p">;</span>
         <span class="o">&lt;%</span> <span class="p">}</span> <span class="o">%&gt;</span>
     <span class="nt">&lt;/script&gt;</span>
-    ...
+    <span class="c">&lt;!-- ... --&gt;</span>
 <span class="nt">&lt;/head&gt;</span>
 </code></pre></div></div>
 <p>Basically, we inject all environment variables into object <code class="language-plaintext highlighter-rouge">window.env</code>, which we have access to in the browser. In <a href="https://github.com/jaketrent/html-webpack-template">jaketrent/html-webpack-template</a>, there are also many other notable tricks, like injecting Google Analytics info into the web page using HtmlWebpackPlugin.</p>
