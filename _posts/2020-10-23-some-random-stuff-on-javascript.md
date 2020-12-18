@@ -20,23 +20,21 @@ In the config file of webpack, we add options for HtmlWebpackPlugin as follows:
 
 ```js
 plugins: [
-    ...
+    // ...
     new HtmlWebpackPlugin({
         template: "./src/template.ejs",
-        ...
+        // ...
         // inject environment variables into pages at build time
         window: {
             env: {
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
-                redirect_uri: process.env.REDIRECT_URL,
-                scopes: process.env.SCOPES,
-                charts: charts
+                env_var_1: process.env.ENV_VAR_1,
+                env_var_2: process.env.ENV_VAR_2,
+                env_var_3: process.env.ENV_VAR_3,
             }
         }
-        ...
+        // ...
     }),
-    ...
+    // ...
 ]
 ```
 
@@ -44,14 +42,14 @@ Then, in the template (note that we use suffix `.ejs` instead of `.html` for the
 
 ```html
 <head>
-    ...
+    <!-- ... -->
     <!-- inject environment variables into pages at build time -->
     <script type="text/javascript">
         <% for (key in htmlWebpackPlugin.options.window) { %>
         window['<%= key %>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[key]) %>;
         <% } %>
     </script>
-    ...
+    <!-- ... -->
 </head>
 ```
 Basically, we inject all environment variables into object `window.env`, which we have access to in the browser. In [jaketrent/html-webpack-template](https://github.com/jaketrent/html-webpack-template), there are also many other notable tricks, like injecting Google Analytics info into the web page using HtmlWebpackPlugin.
