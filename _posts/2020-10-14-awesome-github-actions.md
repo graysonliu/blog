@@ -131,13 +131,17 @@ if auth_cache:
 
 Another thing is, tokens in `.cache` could be refreshed in the runtime. If we do not update `AUTH_CACHE` to keep up with the content of `.cache`, tokens saved in `AUTH_CACHE` could be expired. Therefore, after the playlists are updated, we have to write the content of `.cache` back to secret `AUTH_CACHE` in case file `.cache` changes (though it seems it never changes according to my experience). We have to use Github APIs to update secrets in a workflow, but that needs authentication from Github. The default `${{ secrets.GITHUB_TOKEN }}` does not have the permission to write secrets. For that purpose, we need a token with special scopes of permissions. First, we create a personal access token named `TOKEN_WRITE_SECRETS` with scopes as follows:
 
+{% endraw %}
 ![]({{ site.baseurl }}/images/create_personal_access_token.png)
+{% raw %}
 
 Copy the generated token, and add it to secrets. We also name this secret `TOKEN_WRITE_SECRETS`.
 
 In total, we should have four secrets now:
 
+{% endraw %}
 ![]({{ site.baseurl }}/images/secrets.png)
+{% raw %}
 
 After the updating is finished, we write the content of `.cache` back to `AUTH_CACHE` in the Python script. To write a secret, we should encrypt its content using the repo's public key first. This public key can also be acquired by Github APIs (see [this](https://docs.github.com/en/free-pro-team@latest/rest/reference/actions#get-a-repository-public-key)):
 
