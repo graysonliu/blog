@@ -5,8 +5,6 @@ categories: [jekyll, blog, github]
 comments: true
 ---
 
-{% raw %}
-
 ## Switch to Jekyll
 
 I have abandoned blogging for a very long time. I used to build my blog on [Hexo](https://github.com/hexojs/hexo) and hosted it on Github Pages. A major drawback of this solution is that we have to first generate all static files locally, and then push all those files to the remote repository. As for [Jekyll](https://github.com/jekyll/jekyll), since it is officially supported by Github Pages, we only need to push sources to the remote repository. Github Pages will generate the static site automatically, and those static files are not a part of our repository, making our repo much tidier.
@@ -42,5 +40,3 @@ bundle update
 Even if `_config.yml` in the blog repo does not have the key `theme` (because we replaced it with `remote_theme`), since we specify `minima-graysonliu` as the default theme, Jekyll will use it when we run the server locally.
 
 If we need to keep our forked new theme updated with the original theme, just set the original repo as its [upstream](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/configuring-a-remote-for-a-fork) and [sync](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) the fork regularly.
-
-{% endraw %}
