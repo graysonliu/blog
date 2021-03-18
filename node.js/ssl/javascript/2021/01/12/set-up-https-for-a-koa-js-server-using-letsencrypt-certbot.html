@@ -189,7 +189,7 @@ http://&lt;your-domain-name&gt;/.well-known/acme-challenge/&lt;name&gt;
 
 <p>I also use cron to schedule the renewal monthly. First, create a bash script file named <code class="language-plaintext highlighter-rouge">ssl_renew.sh</code> in your project directory. Make this file executable and write command <code class="language-plaintext highlighter-rouge">certbot renew --standalone</code> in it. Use <code class="language-plaintext highlighter-rouge">crontab -e</code> and append the following line in the opened editor:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 0 1 <span class="k">*</span> <span class="k">*</span> /&lt;path-to-your-project&gt;/ssl_renew.sh
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 0 1 <span class="k">*</span> <span class="k">*</span> ./&lt;path-to-your-project&gt;/ssl_renew.sh
 </code></pre></div></div>
 
 <p>This basically renews certificates on the first day of every month. After the renewal, your server should be restarted to use the new certificates. This can also be done automatically. I use the tool <a href="https://www.npmjs.com/package/nodemon">nodemon</a> to achieve that. nodemon can automatically restart the node application when file changes in directories are detected. To use nodemon, replace <code class="language-plaintext highlighter-rouge">node</code> with <code class="language-plaintext highlighter-rouge">nodemon</code> in <code class="language-plaintext highlighter-rouge">package.json</code> when executing your script:</p>
