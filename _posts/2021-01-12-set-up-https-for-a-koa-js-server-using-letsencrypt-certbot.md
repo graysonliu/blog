@@ -88,7 +88,7 @@ However, LetsEncrypt has rate limits. Forced renewal might fail if you exceed th
 I also use cron to schedule the renewal monthly. First, create a bash script file named `ssl_renew.sh` in your project directory. Make this file executable and write command `certbot renew --standalone` in it. Use `crontab -e` and append the following line in the opened editor:
 
 ```bash
-0 0 1 * * /<path-to-your-project>/ssl_renew.sh
+0 0 1 * * ./<path-to-your-project>/ssl_renew.sh
 ```
 
 This basically renews certificates on the first day of every month. After the renewal, your server should be restarted to use the new certificates. This can also be done automatically. I use the tool [nodemon](https://www.npmjs.com/package/nodemon) to achieve that. nodemon can automatically restart the node application when file changes in directories are detected. To use nodemon, replace `node` with `nodemon` in `package.json` when executing your script:
