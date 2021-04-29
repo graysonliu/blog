@@ -4,7 +4,6 @@ title: "Some Random Stuff on JavaScript"
 categories: [javascript, node.js, webpack, react]
 comments: true
 ---
-{% raw %}
 
 ## Inject Environment Variables into Web Pages at Build Time
 
@@ -85,5 +84,3 @@ person = {
 };
 console.log(person); // { name: 'Peter' }
 ```
-
-{% endraw %}
