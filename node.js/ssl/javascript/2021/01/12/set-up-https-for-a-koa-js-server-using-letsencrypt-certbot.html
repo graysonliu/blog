@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Set Up HTTPS for a Koa.js Server Using LetsEncrypt (Certbot) | CodingBiz 🏃️🤔😴</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Set Up HTTPS for a Koa.js Server Using LetsEncrypt (Certbot)" />
+<meta name="author" content="Zijian Liu" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The Koa backend of my small full-stack Node.js project has been upgraded to support HTTPS. Actually, since the frontend uses HTTPS, it cannot communicate with a server that only supports HTTP (browsers will block HTTP requests sent by a HTTPS page). I plan to use LetsEncrypt to acquire a free SSL certificate. Certbot, which LetsEncrypt recommends, has good support for popular servers like Apache and Nginx, but not with Node.js servers. You have to create the certificate manually for a Node.js server with certbot. A detailed article written by David Mellul talks about how to use certbot to generate the certificate for Express servers. This article closely follows his instructions, except that Express is changed to Koa." />
+<meta property="og:description" content="The Koa backend of my small full-stack Node.js project has been upgraded to support HTTPS. Actually, since the frontend uses HTTPS, it cannot communicate with a server that only supports HTTP (browsers will block HTTP requests sent by a HTTPS page). I plan to use LetsEncrypt to acquire a free SSL certificate. Certbot, which LetsEncrypt recommends, has good support for popular servers like Apache and Nginx, but not with Node.js servers. You have to create the certificate manually for a Node.js server with certbot. A detailed article written by David Mellul talks about how to use certbot to generate the certificate for Express servers. This article closely follows his instructions, except that Express is changed to Koa." />
+<link rel="canonical" href="https://graysonliu.github.io/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html" />
+<meta property="og:url" content="https://graysonliu.github.io/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html" />
+<meta property="og:site_name" content="CodingBiz 🏃️🤔😴" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-12T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://graysonliu.github.io/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html","@type":"BlogPosting","headline":"Set Up HTTPS for a Koa.js Server Using LetsEncrypt (Certbot)","dateModified":"2021-01-12T00:00:00-06:00","datePublished":"2021-01-12T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html"},"author":{"@type":"Person","name":"Zijian Liu"},"description":"The Koa backend of my small full-stack Node.js project has been upgraded to support HTTPS. Actually, since the frontend uses HTTPS, it cannot communicate with a server that only supports HTTP (browsers will block HTTP requests sent by a HTTPS page). I plan to use LetsEncrypt to acquire a free SSL certificate. Certbot, which LetsEncrypt recommends, has good support for popular servers like Apache and Nginx, but not with Node.js servers. You have to create the certificate manually for a Node.js server with certbot. A detailed article written by David Mellul talks about how to use certbot to generate the certificate for Express servers. This article closely follows his instructions, except that Express is changed to Koa.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async
+            src="https://www.googletagmanager.com/gtag/js?id=G-MP9ECE3FQE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-MP9ECE3FQE');
+    </script>
+
+<link rel="shortcut icon" href="/blog/images/thinking.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">CodingBiz 🏃️🤔😴</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Set Up HTTPS for a Koa.js Server Using LetsEncrypt (Certbot)</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-12T00:00:00-06:00" itemprop="datePublished">
+        Jan 12, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      4 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#node.js">node.js</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#ssl">ssl</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#javascript">javascript</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>The <a href="https://github.com/graysonliu/spotify-charts-generator-server">Koa backend</a> of my small full-stack Node.js project has been upgraded to support HTTPS. Actually, since the frontend uses HTTPS, it cannot communicate with a server that only supports HTTP (browsers will block HTTP requests sent by a HTTPS page). I plan to use <a href="https://letsencrypt.org/">LetsEncrypt</a> to acquire a free SSL certificate. Certbot, which LetsEncrypt recommends, has good support for popular servers like Apache and Nginx, but not with Node.js servers. You have to create the certificate manually for a Node.js server with certbot. A detailed <a href="https://itnext.io/node-express-letsencrypt-generate-a-free-ssl-certificate-and-run-an-https-server-in-5-minutes-a730fbe528ca">article</a> written by David Mellul talks about how to use certbot to generate the certificate for Express servers. This article closely follows his instructions, except that Express is changed to Koa.</p>
+
+<h2 id="use-certbot-to-create-ssl-certificates">Use Certbot to Create SSL Certificates</h2>
+
+<p>Create the certificate manually.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>certbot certonly <span class="nt">--manual</span>
+</code></pre></div></div>
+
+<p>Enter your domain name:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Please enter in your domain name(s) (comma and/or space separated)  (Enter 'c' to cancel): &lt;your-domain-name&gt;
+</code></pre></div></div>
+
+<p>Give consent to IP logging. Then, the certbot will tell you what to do next on your server:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Create a file containing just this data:
+
+&lt;data&gt;
+
+And make it available on your web server at this URL:
+
+http://&lt;your-domain-name&gt;/.well-known/acme-challenge/&lt;name&gt;
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+</code></pre></div></div>
+
+<p>Basically, you have to serve a static file on your server. The file is in directory <code class="language-plaintext highlighter-rouge">.well-known/acme-challenge</code> and it is named <code class="language-plaintext highlighter-rouge">&lt;name&gt;</code>. The content of the file should be <code class="language-plaintext highlighter-rouge">&lt;data&gt;</code>.</p>
+
+<p>I use <code class="language-plaintext highlighter-rouge">koa-static</code> to server static files. Since my server is an API server, this certbot file is the only thing that my server will treat as static resources. I created a dedicated directory named <code class="language-plaintext highlighter-rouge">letsencrypt</code> to serve this static file. Put file <code class="language-plaintext highlighter-rouge">&lt;name&gt;</code> into directory <code class="language-plaintext highlighter-rouge">./letsencrypt/.well-known/acme-challenge</code>, and use <code class="language-plaintext highlighter-rouge">koa-static</code> as follows:</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="kd">static</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">koa-static</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kd">static</span><span class="p">(</span><span class="dl">'</span><span class="s1">./letsencrypt</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span><span class="na">hidden</span><span class="p">:</span> <span class="kc">true</span><span class="p">}));</span> <span class="c1">// serve static files</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">80</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Note that <code class="language-plaintext highlighter-rouge">.well-known</code> is a hidden directory. We should set option <code class="language-plaintext highlighter-rouge">hidden</code> to <code class="language-plaintext highlighter-rouge">true</code> to serve hidden files/directories as static resources. Also, your server most likely does not use the default HTTP port <code class="language-plaintext highlighter-rouge">80</code>. Make your server listen to port <code class="language-plaintext highlighter-rouge">80</code> for now. You can change it back to whatever you like after.</p>
+
+<p>When all above have been done, visit that URL in your browser to check whether the setup is correct, and you should see the content <code class="language-plaintext highlighter-rouge">&lt;data&gt;</code> displayed. Then, back to your terminal and just follow the instructions that certbot gives you.</p>
+
+<h2 id="use-certificates-in-the-koa-server">Use Certificates in the Koa Server</h2>
+
+<p>Certbot put created keys in <code class="language-plaintext highlighter-rouge">/etc/letsencrypt/live/&lt;your-domain-name&gt;</code> by default. In Koa, use the following code (I use port <code class="language-plaintext highlighter-rouge">3000</code>):</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">fs</span><span class="dl">'</span><span class="p">);</span>
+
+<span class="c1">// SSL for HTTPS</span>
+<span class="kd">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">key</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="dl">'</span><span class="s1">/etc/letsencrypt/live/&lt;your-domain-name&gt;/privkey.pem</span><span class="dl">'</span><span class="p">),</span>
+    <span class="na">cert</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="dl">'</span><span class="s1">/etc/letsencrypt/live/&lt;your-domain-name&gt;/cert.pem</span><span class="dl">'</span><span class="p">),</span>
+    <span class="na">ca</span><span class="p">:</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">readFileSync</span><span class="p">(</span><span class="dl">'</span><span class="s1">/etc/letsencrypt/live/&lt;your-domain-name&gt;/chain.pem</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">};</span>
+
+<span class="nx">https</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="nx">app</span><span class="p">.</span><span class="nx">callback</span><span class="p">()).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Now, your server provides services using HTTPS.</p>
+
+<h2 id="use-cron-and-nodemon-for-automatically-renewal">Use cron and nodemon for Automatically Renewal</h2>
+
+<p>It should be noted that the certificates issued by LetsEncrypt will expire in 90 days. You have to renew certificates periodically. To renew manually created certificates, use</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>certbot renew <span class="nt">--standalone</span>
+</code></pre></div></div>
+
+<p>This command will only renew certificates that expires in 30 days. You can force the renewal by using</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>certbot renew <span class="nt">--standalone</span> <span class="nt">--force-renewal</span>
+</code></pre></div></div>
+
+<p>However, LetsEncrypt has rate limits. Forced renewal might fail if you exceed the limit.</p>
+
+<p>I also use cron to schedule the renewal monthly. First, create a bash script file named <code class="language-plaintext highlighter-rouge">ssl_renew.sh</code> in your project directory. Make this file executable and write command <code class="language-plaintext highlighter-rouge">certbot renew --standalone</code> in it. Use <code class="language-plaintext highlighter-rouge">crontab -e</code> and append the following line in the opened editor:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>0 0 1 <span class="k">*</span> <span class="k">*</span> ./&lt;path-to-your-project&gt;/ssl_renew.sh
+</code></pre></div></div>
+
+<p>This basically renews certificates on the first day of every month. After the renewal, your server should be restarted to use the new certificates. This can also be done automatically. I use the tool <a href="https://www.npmjs.com/package/nodemon">nodemon</a> to achieve that. nodemon can automatically restart the node application when file changes in directories are detected. To use nodemon, replace <code class="language-plaintext highlighter-rouge">node</code> with <code class="language-plaintext highlighter-rouge">nodemon</code> in <code class="language-plaintext highlighter-rouge">package.json</code> when executing your script:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nodemon app.js"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Also, add configurations for nodemon in <code class="language-plaintext highlighter-rouge">package.json</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"nodemonConfig"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"ignore"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">".git"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"test.js"</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"delay"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2500"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"watch"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="s2">"."</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"/etc/letsencrypt/live/&lt;your-domain-name&gt;"</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"ext"</span><span class="p">:</span><span class="w"> </span><span class="s2">"js, json, pem"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>There are two related attributes in this configuration. First, <code class="language-plaintext highlighter-rouge">watch</code> indicates directories or files where nodemon should monitor changes. Obviously, we should add <code class="language-plaintext highlighter-rouge">/etc/letsencrypt/live/&lt;your-domain-name&gt;</code>, where the certificates are saved. Also, by default, nodemon only detects changes in files with some specific extensions like <code class="language-plaintext highlighter-rouge">.js</code> and <code class="language-plaintext highlighter-rouge">.json</code>. In attribute <code class="language-plaintext highlighter-rouge">ext</code>, we should also add <code class="language-plaintext highlighter-rouge">pem</code>, which is the extension of certificates. Now, after the renewal, the Node.js server will automatically be restarted by nodemon.</p>
+
+<p>Check my <a href="https://github.com/graysonliu/spotify-charts-generator-server">project</a> for more details.</p>
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="graysonliu/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">Zijian Liu</li>
+          <li><a class="u-email" href="mailto:liu.zijian@outlook.com">liu.zijian@outlook.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Just my coding business.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/graysonliu" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
