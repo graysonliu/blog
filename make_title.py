@@ -4,4 +4,4 @@ def make_title(s):
     return str(date.today()) + '-' + '-'.join(''.join(s).split())
 
 
-print(make_title('Python Formatting in VS Code'))
+print(make_title('Notes about multiprocessing in Python'))
