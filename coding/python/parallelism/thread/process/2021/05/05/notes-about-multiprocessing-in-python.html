@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Notes about multiprocessing in Python | CodingBiz 🏃️🤔😴</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Notes about multiprocessing in Python" />
+<meta name="author" content="Zijian Liu" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Just my coding business." />
+<meta property="og:description" content="Just my coding business." />
+<link rel="canonical" href="https://graysonliu.github.io/blog/coding/python/parallelism/thread/process/2021/05/05/notes-about-multiprocessing-in-python.html" />
+<meta property="og:url" content="https://graysonliu.github.io/blog/coding/python/parallelism/thread/process/2021/05/05/notes-about-multiprocessing-in-python.html" />
+<meta property="og:site_name" content="CodingBiz 🏃️🤔😴" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-05-05T00:00:00-05:00" />
+<script type="application/ld+json">
+{"url":"https://graysonliu.github.io/blog/coding/python/parallelism/thread/process/2021/05/05/notes-about-multiprocessing-in-python.html","@type":"BlogPosting","headline":"Notes about multiprocessing in Python","dateModified":"2021-05-05T00:00:00-05:00","datePublished":"2021-05-05T00:00:00-05:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/coding/python/parallelism/thread/process/2021/05/05/notes-about-multiprocessing-in-python.html"},"author":{"@type":"Person","name":"Zijian Liu"},"description":"Just my coding business.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async
+            src="https://www.googletagmanager.com/gtag/js?id=G-MP9ECE3FQE"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-MP9ECE3FQE');
+    </script>
+
+<link rel="shortcut icon" href="/blog/images/thinking.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">CodingBiz 🏃️🤔😴</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Notes about `multiprocessing` in Python</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-05-05T00:00:00-05:00" itemprop="datePublished">
+        May 5, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      11 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#coding">coding</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#python">python</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#parallelism">parallelism</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#thread">thread</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#process">process</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/graysonliu/blog/tree/master/_notebooks/2021-05-05-notes-about-multiprocessing-in-python.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/graysonliu/blog/master?filepath=_notebooks%2F2021-05-05-notes-about-multiprocessing-in-python.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/graysonliu/blog/blob/master/_notebooks/2021-05-05-notes-about-multiprocessing-in-python.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-05-05-notes-about-multiprocessing-in-python.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="GIL,-threading,-multiprocessing">GIL, threading, multiprocessing<a class="anchor-link" href="#GIL,-threading,-multiprocessing"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>GIL (Global Interpreter Lock) assures that only one thread executes Python bytecode in a process at a time. Therefore, multithreading program achieved by the <code>threading</code> module cannot fully utilize multi-core manchines. To write a parallel program in Python, the <code>multiprocessing</code> module should be used.</p>
+<blockquote><p>Since GIL is always released when doing I/O, <code>threading</code> is still an appropriate module if we want to run multiple I/O-bound tasks simultaneously.</p>
+</blockquote>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Process">Process<a class="anchor-link" href="#Process"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>It is quite easy to create a new process in Python. We basically pass a target function and all arguments needed by the invocation to the <code>Process</code> object. Use <code>start()</code> to start the process's activity (i.e. the invocation of the target function). Use <code>join()</code> to block the parent process until the child process exits.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Start sleeping for 2 seconds...&#39;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sleeping ends.&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Hello, world.&#39;</span><span class="p">,))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;before join(), the parent process is not blocked&#39;</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;After join()&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Start sleeping for 2 seconds...
+before join(), the parent process is not blocked
+Sleeping ends.
+Hello, world.
+After join()
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If an exception happens in the child process, the stack trace will also be printed in the console.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Hello, world.&#39;</span><span class="p">,))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>Process Process-99:
+Traceback (most recent call last):
+  File &#34;/usr/lib/python3.8/multiprocessing/process.py&#34;, line 315, in _bootstrap
+    self.run()
+  File &#34;/usr/lib/python3.8/multiprocessing/process.py&#34;, line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File &#34;&lt;ipython-input-27-8d12741476dc&gt;&#34;, line 5, in worker
+    print(2 / 0)
+ZeroDivisionError: division by zero
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Process-Pool">Process Pool<a class="anchor-link" href="#Process-Pool"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also create a pool of processes. The following snippet creates a process pool of size 4, and we put 8 tasks into the pool.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+<span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0
+4
+2
+3
+1
+7
+6
+5
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>When invoking <code>apply_async()</code>, a new task is submitted to the pool and the task will start once there is an empty slot in the pool. <code>Pool</code> also has a synchronized version of this method, <code>apply()</code>, which will block the parent process until the result is ready. Therefore, for parallelism, <code>apply_async()</code> should always be used. We also used <code>join()</code> method to block the parent process after we finished adding all tasks to the pool. If we do not block the parent process, <strong>parent process might exit before child processes finish their tasks</strong>. That's why we always use <code>join()</code> in the parent process to avoid this situation. Note that <code>close()</code> must be called before using <code>join()</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Unlike <code>Process</code>, stack trace of exceptions in <code>Pool</code> will not be printed in the console, but we might need that when debugging a multiprocessing program. We can pass an error callback function to the <code>apply_async()</code> method, and that function will be used to print stack trace if exceptions happen. Note that the callback functions will block the parent process, so, do not put time-consuming tasks in the callback function since it should complete immediately. The error callback function only takes one argument and that is the exception instance.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">print_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">p</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>None
+None
+multiprocessing.pool.RemoteTraceback: 
+&#34;&#34;&#34;
+Traceback (most recent call last):
+  File &#34;/usr/lib/python3.8/multiprocessing/pool.py&#34;, line 125, in worker
+    result = (True, func(*args, **kwds))
+  File &#34;&lt;ipython-input-50-90874a7b31e2&gt;&#34;, line 5, in worker
+    print(i / 0)
+ZeroDivisionError: division by zero
+&#34;&#34;&#34;
+
+The above exception was the direct cause of the following exception:
+
+ZeroDivisionError: division by zero
+multiprocessing.pool.RemoteTraceback: 
+&#34;&#34;&#34;
+Traceback (most recent call last):
+  File &#34;/usr/lib/python3.8/multiprocessing/pool.py&#34;, line 125, in worker
+    result = (True, func(*args, **kwds))
+  File &#34;&lt;ipython-input-50-90874a7b31e2&gt;&#34;, line 5, in worker
+    print(i / 0)
+ZeroDivisionError: division by zero
+&#34;&#34;&#34;
+
+The above exception was the direct cause of the following exception:
+
+ZeroDivisionError: division by zero
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Communication-Between-Processes">Communication Between Processes<a class="anchor-link" href="#Communication-Between-Processes"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I usually just use <code>Queue</code> for communication between processes, even if there are only two processes, in which <code>Pipe</code> also works. We don't have to worry about race conditions when using queue since queues are <strong>thread and process safe</strong> in Python. We will look at the one-producer-one-consumer case first.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Queue</span>
+<span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">random</span>
+
+<span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">)</span> <span class="c1"># to notify the consumer process that the producer process has exited</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;producer exits&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">product</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;consumer exits&#39;</span><span class="p">)</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">producer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,))</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,))</span>
+<span class="n">p1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">p2</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">p1</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">p2</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>0
+1
+2
+3
+producer exits4
+
+consumer exits
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>There might be race conditions on invocations of <code>print()</code>, so multiple lines could be shown in the same line. But other than that, everything should be expected. Note that the <code>get()</code> method of <code>Queue</code> will block the child process if no item in the queue is immediately available. We can avoid blocking by set argument <code>block</code> to <code>Fasle</code> or simply using <code>get_nowait()</code>, but it will raise an exception if it cannot get an item immediately. If we want to avoid blocking for too long, we can pass a <code>timeout</code> argument to <code>get()</code>. If the size of a queue is limited, the same approach can also be applied to the <code>put()</code> method.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now look at the multi-producer-multi-consumer case, where we will use <code>Pool</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">Queue</span>
+<span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">random</span>
+
+<span class="k">def</span> <span class="nf">print_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">producer_id</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;product </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> from producer </span><span class="si">{</span><span class="n">producer_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">)</span> <span class="c1"># to notify the consumer process that the producer process has exited</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;producer </span><span class="si">{</span><span class="n">producer_id</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">consumer_id</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">product</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">product</span><span class="si">}</span><span class="s1"> consumed by consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+<span class="n">producer_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">consumer_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">producer_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">producer_count</span><span class="p">)</span>
+<span class="n">consumer_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">consumer_count</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">producer_count</span><span class="p">):</span>
+    <span class="n">producer_pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">producer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">consumer_count</span><span class="p">):</span>
+    <span class="n">consumer_pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">producer_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">consumer_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">producer_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">consumer_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>None
+None
+None
+None
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File &#34;/usr/lib/python3.8/multiprocessing/pool.py&#34;, line 537, in _handle_tasks
+    put(task)
+  File &#34;/usr/lib/python3.8/multiprocessing/connection.py&#34;, line 206, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File &#34;/usr/lib/python3.8/multiprocessing/reduction.py&#34;, line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File &#34;/usr/lib/python3.8/multiprocessing/queues.py&#34;, line 58, in __getstate__
+    context.assert_spawning(self)
+  File &#34;/usr/lib/python3.8/multiprocessing/context.py&#34;, line 359, in assert_spawning
+    raise RuntimeError(
+  File &#34;/usr/lib/python3.8/multiprocessing/pool.py&#34;, line 537, in _handle_tasks
+    put(task)
+  File &#34;/usr/lib/python3.8/multiprocessing/connection.py&#34;, line 206, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File &#34;/usr/lib/python3.8/multiprocessing/reduction.py&#34;, line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File &#34;/usr/lib/python3.8/multiprocessing/queues.py&#34;, line 58, in __getstate__
+    context.assert_spawning(self)
+  File &#34;/usr/lib/python3.8/multiprocessing/context.py&#34;, line 359, in assert_spawning
+    raise RuntimeError(
+RuntimeError: Queue objects should only be shared between processes through inheritance
+RuntimeError: Queue objects should only be shared between processes through inheritance
+Traceback (most recent call last):
+  File &#34;/usr/lib/python3.8/multiprocessing/pool.py&#34;, line 537, in _handle_tasks
+    put(task)
+  File &#34;/usr/lib/python3.8/multiprocessing/connection.py&#34;, line 206, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File &#34;/usr/lib/python3.8/multiprocessing/reduction.py&#34;, line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File &#34;/usr/lib/python3.8/multiprocessing/queues.py&#34;, line 58, in __getstate__
+    context.assert_spawning(self)
+  File &#34;/usr/lib/python3.8/multiprocessing/context.py&#34;, line 359, in assert_spawning
+    raise RuntimeError(
+RuntimeError: Queue objects should only be shared between processes through inheritance
+Traceback (most recent call last):
+  File &#34;/usr/lib/python3.8/multiprocessing/pool.py&#34;, line 537, in _handle_tasks
+    put(task)
+  File &#34;/usr/lib/python3.8/multiprocessing/connection.py&#34;, line 206, in send
+    self._send_bytes(_ForkingPickler.dumps(obj))
+  File &#34;/usr/lib/python3.8/multiprocessing/reduction.py&#34;, line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File &#34;/usr/lib/python3.8/multiprocessing/queues.py&#34;, line 58, in __getstate__
+    context.assert_spawning(self)
+  File &#34;/usr/lib/python3.8/multiprocessing/context.py&#34;, line 359, in assert_spawning
+    raise RuntimeError(
+RuntimeError: Queue objects should only be shared between processes through inheritance
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We are getting <code>RuntimeError</code>, and it says <code>Queue objects should only be shared between processes through inheritance</code>. This happens if we try to use <code>multiprocessing.Queue</code> in a process pool. As for solution, we should use <code>multiprocessing.Manager.Queue</code> among pool workers instead.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">Manager</span>
+<span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">random</span>
+
+<span class="k">def</span> <span class="nf">print_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">producer_id</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;product </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> from producer </span><span class="si">{</span><span class="n">producer_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">)</span> <span class="c1"># to notify the consumer process that a producer process has exited</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;producer </span><span class="si">{</span><span class="n">producer_id</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">consumer_id</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">product</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">product</span><span class="si">}</span><span class="s1"> consumed by consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+<span class="n">producer_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">consumer_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">producer_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">producer_count</span><span class="p">)</span>
+<span class="n">consumer_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">consumer_count</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">producer_count</span><span class="p">):</span>
+    <span class="n">producer_pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">producer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">consumer_count</span><span class="p">):</span>
+    <span class="n">consumer_pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">producer_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">consumer_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">producer_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">consumer_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>product 0 from producer 1 consumed by consumer 0
+product 0 from producer 0 consumed by consumer 1
+product 1 from producer 1 consumed by consumer 0
+product 1 from producer 0 consumed by consumer 1
+product 2 from producer 0 consumed by consumer 0
+product 2 from producer 1 consumed by consumer 1
+product 3 from producer 0 consumed by consumer 0
+product 3 from producer 1 consumed by consumer 1
+consumer 1 exitsproduct 4 from producer 1 consumed by consumer 0
+
+producer 1 exits
+product 4 from producer 0 consumed by consumer 0
+producer 0 exitsconsumer 0 exits
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Lock">Lock<a class="anchor-link" href="#Lock"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The above snippet has several flaws. Firstly, invocations of <code>print()</code> in different processes has race conditions, which could mess up the printed text in the console. Also, a consumer exits immediately when it receives an <code>end</code> signal, which is not desired since there might be products from one producer enqueued after the <code>end</code> signal from another producer. We want consumers to exit only if all producers have exited.</p>
+<p>To handle the <code>print()</code> problem, we need a lock to avoid race conditions. To know whether all producers have exited or not, we need a shared value among consumers, which counts the number of exited producers. This shared value will be increased by 1 every time a consumer receives an <code>end</code> signal.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Value</span>
+<span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">random</span>
+
+<span class="k">def</span> <span class="nf">print_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">producer</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">producer_id</span><span class="p">,</span> <span class="n">print_lock</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;product </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1"> from producer </span><span class="si">{</span><span class="n">producer_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">)</span> <span class="c1"># to notify the consumer process that a producer process has exited</span>
+    <span class="k">with</span> <span class="n">print_lock</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;producer </span><span class="si">{</span><span class="n">producer_id</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">consumer_id</span><span class="p">,</span> <span class="n">producer_count</span><span class="p">,</span> <span class="n">print_lock</span><span class="p">,</span> <span class="n">exited_producer_count</span><span class="p">,</span> <span class="n">count_lock</span><span class="p">):</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">product</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exited_producer_count</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="n">producer_count</span><span class="p">:</span>
+                <span class="c1"># all producers have exited</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">product</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">count_lock</span><span class="p">:</span>
+                <span class="n">exited_producer_count</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="k">with</span> <span class="n">print_lock</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">product</span><span class="si">}</span><span class="s1"> consumed by consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">print_lock</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">}</span><span class="s1"> exits&#39;</span><span class="p">)</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+<span class="n">exited_producer_count</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># type code &#39;i&#39; means &#39;signed int&#39; in C type</span>
+<span class="n">print_lock</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+<span class="n">count_lock</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+<span class="n">producer_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">consumer_count</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">producer_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">producer_count</span><span class="p">)</span>
+<span class="n">consumer_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="n">consumer_count</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">producer_count</span><span class="p">):</span>
+    <span class="n">producer_pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">producer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">print_lock</span><span class="p">),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">consumer_count</span><span class="p">):</span>
+    <span class="n">consumer_pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">producer_count</span><span class="p">,</span> <span class="n">print_lock</span><span class="p">,</span> <span class="n">exited_producer_count</span><span class="p">,</span> <span class="n">count_lock</span><span class="p">),</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">producer_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">consumer_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">producer_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">consumer_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>product 0 from producer 1 consumed by consumer 0
+product 0 from producer 0 consumed by consumer 0
+product 1 from producer 1 consumed by consumer 0
+product 2 from producer 1 consumed by consumer 1
+product 1 from producer 0 consumed by consumer 0
+product 3 from producer 1 consumed by consumer 0
+product 2 from producer 0 consumed by consumer 0
+product 4 from producer 1 consumed by consumer 0
+producer 1 exits
+product 3 from producer 0 consumed by consumer 1
+producer 0 exits
+product 4 from producer 0 consumed by consumer 0
+consumer 1 exits
+consumer 0 exits
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We defined two locks. The <code>print_lock</code> is acquired before each <code>print()</code> invocation. Another lock <code>count_lock</code> ensures that the increment of <code>exited_producer_count</code> is atomic. Same as <code>Queue</code>, we have to use <code>multiprocessing.Manager.Value</code> instead of <code>multiprocessing.Value</code> in a process pool. As shown in the output, each <code>print()</code> invocation takes one line exclusively, and consumers exited only if all producers have exited.</p>
+<p>The following snipppet will demonstrate race conditions between processes.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">Value</span>
+
+<span class="k">def</span> <span class="nf">print_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">counter</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">counter</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">-=</span> <span class="mi">1</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">add_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">add_pool</span><span class="o">.</span><span class="n">starmap_async</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="p">[(</span><span class="n">counter</span><span class="p">,)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)],</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">sub_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sub_pool</span><span class="o">.</span><span class="n">starmap_async</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="p">[(</span><span class="n">counter</span><span class="p">,)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)],</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">add_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">sub_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">add_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">sub_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>49
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We have four <code>add</code> wokers and two <code>sub</code> wokers. Since each worker will change the shared value by +100/-100, we should have 200 as the final result. However, the result is not what we expected because race conditions happened.</p>
+<p>We wrap the augmented assignment with a <code>Manager.Lock</code> in the following code, which gives us the correct output. Apart from <code>with</code> statements we used previously, we can also explictly call <code>acquire()</code> and <code>release()</code> method of <code>Lock</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">Value</span>
+
+<span class="k">def</span> <span class="nf">print_traceback</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_exception</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">e</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="n">counter_lock</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">counter_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">counter_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">sub</span><span class="p">(</span><span class="n">counter</span><span class="p">,</span> <span class="n">counter_lock</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">counter_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">counter_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">Manager</span><span class="p">()</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">counter_lock</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+<span class="n">add_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">add_pool</span><span class="o">.</span><span class="n">starmap_async</span><span class="p">(</span><span class="n">add</span><span class="p">,</span> <span class="p">[(</span><span class="n">counter</span><span class="p">,</span> <span class="n">counter_lock</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)],</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">sub_pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">sub_pool</span><span class="o">.</span><span class="n">starmap_async</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="p">[(</span><span class="n">counter</span><span class="p">,</span> <span class="n">counter_lock</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)],</span> <span class="n">error_callback</span><span class="o">=</span><span class="n">print_traceback</span><span class="p">)</span>
+<span class="n">add_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">sub_pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">add_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="n">sub_pool</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>200
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="graysonliu/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/coding/python/parallelism/thread/process/2021/05/05/notes-about-multiprocessing-in-python.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+        <ul class="contact-list">
+          <li class="p-name">Zijian Liu</li>
+          <li><a class="u-email" href="mailto:liu.zijian@outlook.com">liu.zijian@outlook.com</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <p>Just my coding business.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/graysonliu" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
