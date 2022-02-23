@@ -164,12 +164,9 @@ window.onload = wrap_img;
 <blockquote><p>Backtracking incrementally builds candidates to the solutions, and abandons a candidate ("backtracks") as soon as it determines that the candidate cannot possibly be completed to a valid solution.</p>
 </blockquote>
 <p><em><code>Cannot possibly be completed to a valid solution</code></em> means there are some constraints that the candidate cannot satisfy. Therefore, those kind of problems are often called <strong>constraint satisfaction problems</strong>.</p>
-<p>For example, in a Sudoku problem, we have following constraints that must be satisfied:- Each of the digits 1-9 must occur exactly once in each row.</p>
+<p>For example, in a Sudoku problem, we have following constraints that must be satisfied:- Each of the digits 1-9 must occur exactly once in each row- Each of the digits 1-9 must occur exactly once in each column.</p>
 <ul>
-<li><p>Each of the digits 1-9 must occur exactly once in each column.</p>
-</li>
-<li><p>Each of the digits 1-9 must occur exactly once in each of the 9 3x3 sub-boxes of the grid.</p>
-</li>
+<li>Each of the digits 1-9 must occur exactly once in each of the 9 3x3 sub-boxes of the grid.</li>
 </ul>
 
 </div>
