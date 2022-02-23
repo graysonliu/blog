@@ -20,17 +20,17 @@
 {"url":"https://graysonliu.github.io/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://graysonliu.github.io/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html"},"headline":"Set Up HTTPS for a Koa.js Server Using LetsEncrypt (Certbot)","dateModified":"2021-01-12T00:00:00-06:00","datePublished":"2021-01-12T00:00:00-06:00","author":{"@type":"Person","name":"Zijian Liu"},"description":"The Koa backend of my small full-stack Node.js project has been upgraded to support HTTPS. Actually, since the frontend uses HTTPS, it cannot communicate with a server that only supports HTTP (browsers will block HTTP requests sent by a HTTPS page). I plan to use LetsEncrypt to acquire a free SSL certificate. Certbot, which LetsEncrypt recommends, has good support for popular servers like Apache and Nginx, but not with Node.js servers. You have to create the certificate manually for a Node.js server with certbot. A detailed article written by David Mellul talks about how to use certbot to generate the certificate for Express servers. This article closely follows his instructions, except that Express is changed to Koa.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://graysonliu.github.io/blog/feed.xml" title="CodingBiz 🏃️🤔😴" />
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async
-            src="https://www.googletagmanager.com/gtag/js?id=G-MP9ECE3FQE"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'G-MP9ECE3FQE');
-    </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-MP9ECE3FQE"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-MP9ECE3FQE');
+</script>
+
 
 <link rel="shortcut icon" href="/blog/images/thinking.svg">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
@@ -230,6 +230,7 @@ http://&lt;your-domain-name&gt;/.well-known/acme-challenge/&lt;name&gt;
         async>
 </script><a class="u-url" href="/blog/node.js/ssl/javascript/2021/01/12/set-up-https-for-a-koa-js-server-using-letsencrypt-certbot.html" hidden></a>
 </article>
+
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/blog/"></data>
@@ -255,7 +256,7 @@ http://&lt;your-domain-name&gt;/.well-known/acme-challenge/&lt;name&gt;
       </div>
     </div>
 
-    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/graysonliu" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li></ul>
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/graysonliu" target="_blank" title="graysonliu"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/liu-zijian" target="_blank" title="liu-zijian"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#linkedin"></use></svg></a></li></ul>
 </div>
 
   </div>
